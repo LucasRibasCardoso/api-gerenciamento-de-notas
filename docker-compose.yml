@@ -1,0 +1,55 @@
+services:
+  # Serviço MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: gerenciamento-notas-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: gerenciamento_notas
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - app-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # Serviço da API Node.js
+  api:
+    build: .
+    container_name: gerenciamento-notas-api
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT:-3000}
+      NODE_ENV: ${NODE_ENV:-production}
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/gerenciamento_notas?authSource=admin
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+# Volumes persistentes
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+# Rede para comunicação entre serviços
+networks:
+  app-network:
+    driver: bridge

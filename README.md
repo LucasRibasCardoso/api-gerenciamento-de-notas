@@ -1,15 +1,22 @@
-# API de Gerenciamento de Notas
+# Sistema de Gerenciamento de Notas
 
-Sistema de gerenciamento de notas de estudantes desenvolvido com Node.js, Express, MongoDB e boas práticas de Clean Code e SOLID.
+Sistema completo de gerenciamento de notas de estudantes com **Frontend** e **Backend** separados, desenvolvido com Node.js, Express, MongoDB, Handlebars e boas práticas de Clean Code e SOLID.
 
 ## 🚀 Tecnologias
 
+### Backend
 - **Node.js** - Runtime JavaScript
 - **Express** - Framework web
 - **MongoDB** - Banco de dados NoSQL
 - **Mongoose** - ODM para MongoDB
 - **Yup** - Validação de schemas
 - **Docker** - Containerização
+- **CORS** - Cross-Origin Resource Sharing
+
+### Frontend
+- **Node.js** - Runtime JavaScript
+- **Express** - Framework web
+- **Handlebars** - Template engine
 - **dotenv** - Gerenciamento de variáveis de ambiente
 
 ## 📋 Pré-requisitos
@@ -18,48 +25,107 @@ Sistema de gerenciamento de notas de estudantes desenvolvido com Node.js, Expres
 - Docker e Docker Compose
 - npm ou yarn
 
-## 🔧 Instalação
+## 🔧 Instalação e Execução
 
-### Método 1: Com Docker Compose (Recomendado) 🐳
+### Método Rápido (Recomendado) ⚡
 
-Este é o método mais simples - toda a aplicação (API + MongoDB) será executada em containers Docker.
+Execute toda a aplicação com um único comando:
 
 ```bash
 # 1. Clone o repositório
 git clone <url-do-repositorio>
 cd api-gerenciamento-de-notas
 
-# 2. Inicie toda a aplicação com um único comando
-docker-compose up -d
-
-# 3. Verifique se está rodando
-docker-compose ps
+# 2. Inicie tudo com um comando
+./start.sh
 ```
 
-✨ **Pronto!** A API estará disponível em `http://localhost:3000`
-
-**Comandos úteis:**
+Para parar a aplicação:
 ```bash
-# Ver logs em tempo real
-docker-compose logs -f
+./stop.sh
+```
 
-# Ver logs apenas da API
-docker-compose logs -f api
+### Método Manual
 
-# Ver logs apenas do MongoDB
-docker-compose logs -f mongodb
+#### Passo 1: Iniciar o Backend (API + MongoDB) 🐳
 
-# Parar toda a aplicação
-docker-compose down
+```bash
+cd backend
+docker-compose up -d
+```
 
-# Parar e remover volumes (apaga dados)
-docker-compose down -v
+✨ A API estará disponível em `http://localhost:3000`
 
-# Reconstruir após mudanças no código
-docker-compose up -d --build
+#### Passo 2: Iniciar o Frontend 🌐
 
-# Reiniciar apenas a API
-docker-compose restart api
+```bash
+cd fronted
+npm install
+node index.js
+```
+
+✨ O Frontend estará disponível em `http://localhost:4000`
+
+## 🌐 Acessando a Aplicação
+
+| Serviço | URL | Descrição |
+|---------|-----|-----------|
+| Frontend | http://localhost:4000 | Interface web para usuários |
+| Backend API | http://localhost:3000/api | API REST |
+| Health Check | http://localhost:3000/health | Status da API e banco |
+
+## 📁 Estrutura do Projeto
+
+```
+api-gerenciamento-de-notas/
+├── backend/                         # API REST
+│   ├── src/
+│   │   ├── DAO/
+│   │   │   └── EstudanteDAO.js      # Data Access Object
+│   │   ├── database/
+│   │   │   └── connection.js        # Gerenciamento de conexão
+│   │   ├── models/
+│   │   │   ├── Estudante.js         # Schema Mongoose
+│   │   │   └── validations/
+│   │   │       └── estudanteValidation.js
+│   │   └── routes/
+│   │       └── routes.js            # Rotas da API
+│   ├── docker-compose.yml           # Docker (API + MongoDB)
+│   ├── Dockerfile
+│   ├── index.js                     # Entrada da API
+│   └── package.json
+│
+├── fronted/                         # Interface Web
+│   ├── public/
+│   │   ├── css/                     # Estilos
+│   │   └── icons/                   # Ícones
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   └── main.handlebars      # Layout principal
+│   │   ├── index.handlebars         # Página inicial
+│   │   ├── cadastro.handlebars      # Cadastrar estudante
+│   │   ├── listagem.handlebars      # Listar estudantes
+│   │   └── editar.handlebars        # Editar estudante
+│   ├── .env                         # Configurações
+│   ├── index.js                     # Entrada do frontend
+│   └── package.json
+│
+└── README.md
+```
+
+## ⚙️ Configuração
+
+### Variáveis de Ambiente - Backend (`backend/.env`)
+```env
+PORT=3000
+NODE_ENV=development
+MONGODB_URI=mongodb://admin:admin123@mongodb:27017/gerenciamento_notas?authSource=admin
+```
+
+### Variáveis de Ambiente - Frontend (`fronted/.env`)
+```env
+BACKEND_URL=http://localhost:3000
+PORT=4000
 ```
 ## 📚 Endpoints da API
 
@@ -140,28 +206,41 @@ GET /api/notas/:nome
 DELETE /api/excluir/:nome
 ```
 
-## 🏗️ Estrutura do Projeto
+## 🐳 Comandos Docker
 
+```bash
+# Iniciar backend (API + MongoDB)
+cd backend
+docker-compose up -d
+
+# Ver logs em tempo real
+docker-compose logs -f
+
+# Ver logs apenas da API
+docker-compose logs -f api
+
+# Ver logs apenas do MongoDB
+docker-compose logs -f mongodb
+
+# Parar toda a aplicação
+docker-compose down
+
+# Parar e remover volumes (apaga dados)
+docker-compose down -v
+
+# Reconstruir após mudanças no código
+docker-compose up -d --build
+
+# Reiniciar apenas a API
+docker-compose restart api
+
+# Verificar status dos containers
+docker-compose ps
 ```
-api-gerenciamento-de-notas/
-├── src/
-│   ├── DAO/
-│   │   └── EstudanteDAO.js          # Data Access Object
-│   ├── database/
-│   │   └── connection.js            # Gerenciamento de conexão
-│   ├── models/
-│   │   ├── Estudante.js             # Schema Mongoose
-│   │   └── validations/
-│   │       └── estudanteValidation.js  # Schemas Yup
-│   └── routes/
-│       └── routes.js                # Rotas da API
-├── public/                          # Arquivos estáticos
-├── views/                           # Views (se aplicável)
-├── .env                             # Variáveis de ambiente
-├── .env.example                     # Exemplo de configuração
-├── docker-compose.yml               # Configuração Docker
-├── index.js                         # Entrada da aplicação
-└── package.json                     # Dependências
+
+### Acessar MongoDB via terminal
+```bash
+docker exec -it gerenciamento-notas-mongodb mongosh -u admin -p admin123 --authenticationDatabase admin
 ```
 
 ## 🎯 Princípios Aplicados
@@ -187,33 +266,6 @@ api-gerenciamento-de-notas/
 - Dependência de abstrações (Mongoose models, Yup schemas)
 - Não depende de implementações concretas
 
-## 🐳 Docker
-
-### Comandos úteis
-
-```bash
-# Iniciar MongoDB
-docker-compose up -d
-
-# Ver logs do MongoDB
-docker-compose logs -f mongodb
-
-# Parar MongoDB
-docker-compose down
-
-# Parar e remover volumes (apaga dados)
-docker-compose down -v
-
-# Verificar status dos containers
-docker-compose ps
-```
-
-### Acessar MongoDB via terminal
-
-```bash
-docker exec -it gerenciamento-notas-mongodb mongosh -u admin -p admin123 --authenticationDatabase admin
-```
-
 ## 🔒 Validações com Yup
 
 O projeto utiliza Yup para validações robustas:
@@ -224,6 +276,12 @@ O projeto utiliza Yup para validações robustas:
 - Mensagens de erro personalizadas
 
 ## 📝 Notas Técnicas
+
+### Arquitetura
+- **Backend** (porta 3000): API REST com MongoDB
+- **Frontend** (porta 4000): Interface web que consome a API via fetch
+- Comunicação via HTTP/JSON
+- CORS habilitado para permitir requisições cross-origin
 
 ### Cálculo da Média
 A média é calculada automaticamente antes de salvar/atualizar:
@@ -237,7 +295,3 @@ O sistema gerencia automaticamente a conexão com MongoDB:
 - Reconexão automática em caso de falha
 - Health checks
 - Desconexão graciosa ao encerrar
-
-## ✨ Autores
-
-Desenvolvido para o projeto de Gerenciamento de Notas.

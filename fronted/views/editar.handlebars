@@ -1,0 +1,62 @@
+<h2>Editar Nota</h2>
+
+<form id="meuFormEditar">
+    <label>Nome:</label>
+    <input type="text" name="nome" required value="{{nome}}" readonly>
+
+    <label>Nota 1:</label>
+    <input type="number" step="0.1" name="nota1" value="{{nota1}}" required>
+
+    <label>Nota 2:</label>
+    <input type="number" step="0.1" name="nota2" value="{{nota2}}" required>
+
+    <label>Nota 3:</label>
+    <input type="number" step="0.1" name="nota3" value="{{nota3}}" required>
+
+    <button type="submit">Salvar</button>
+</form>
+
+<div id="mensagem"></div>
+
+<script>
+    const BACKEND_URL = '{{BACKEND_URL}}';
+
+    document.getElementById('meuFormEditar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const nome = formData.get('nome');
+        const dados = {
+            nota1: parseFloat(formData.get('nota1')),
+            nota2: parseFloat(formData.get('nota2')),
+            nota3: parseFloat(formData.get('nota3'))
+        };
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/editar/${encodeURIComponent(nome)}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Estudante atualizado com sucesso!');
+                window.location.href = '/listagem';
+            } else {
+                document.getElementById('mensagem').innerHTML =
+                    `<p style="color: red;">Erro: ${result.message}</p>`;
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            document.getElementById('mensagem').innerHTML =
+                '<p style="color: red;">Erro ao atualizar. Verifique se o backend está rodando.</p>';
+        }
+    });
+</script>
+
+<br>
+<a href="/">Voltar</a>

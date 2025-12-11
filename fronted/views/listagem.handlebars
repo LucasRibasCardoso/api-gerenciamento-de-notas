@@ -1,0 +1,64 @@
+<h2>Listagem de Notas</h2>
+
+<div id="lista"></div>
+
+<script>
+    const BACKEND_URL = '{{BACKEND_URL}}';
+
+    fetch(`${BACKEND_URL}/api/notas`)
+        .then(res => res.json())
+        .then(response => {
+            const data = response.data || [];
+            let html = "<table border='1'><tr><th>Nome</th><th>Nota 1</th><th>Nota 2</th><th>Nota 3</th><th>Média</th><th>Ações</th></tr>";
+            data.forEach(estudante => {
+                html += `
+                <tr>
+                    <td>${estudante.nome}</td>
+                    <td>${estudante.nota1 ?? '-'}</td>
+                    <td>${estudante.nota2 ?? '-'}</td>
+                    <td>${estudante.nota3 ?? '-'}</td>
+                    <td>${estudante.media ?? '-'}</td>
+                    <td>
+                        <a href="/editar/${encodeURIComponent(estudante.nome)}?nota1=${estudante.nota1 ?? ''}&nota2=${estudante.nota2 ?? ''}&nota3=${estudante.nota3 ?? ''}">
+                            <img src="/icons/editar.png" width="24" height="24" alt="Editar"> 
+                        </a>
+                        <button onclick="excluirEstudante('${estudante.nome}')" style="border: none; background: none; padding: 0; cursor: pointer;">
+                            <img src="/icons/delete.jpeg" width="24" height="24" alt="Excluir">
+                        </button>
+                    </td>
+                </tr>
+            `;
+            });
+
+            html += "</table>";
+            document.getElementById("lista").innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Erro ao carregar notas:', error);
+            document.getElementById("lista").innerHTML = '<p style="color: red;">Erro ao carregar dados. Verifique se o backend está rodando.</p>';
+        });
+
+    function excluirEstudante(nome) {
+        if (!confirm(`Confirmar exclusão de ${nome}?`)) return;
+
+        fetch(`${BACKEND_URL}/api/excluir/${encodeURIComponent(nome)}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Estudante excluído com sucesso!');
+                    window.location.reload();
+                } else {
+                    alert('Erro ao excluir: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao excluir estudante');
+            });
+    }
+</script>
+
+<br>
+<a href="/">Voltar</a>
